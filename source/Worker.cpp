@@ -11,20 +11,9 @@ using namespace std;
 
 void Worker::initialize(int id, Graph *g, int nWorkers) {
     this->id = id;
-    this->g = g;
     this->graphSize = g->nNodes / nWorkers + 1;
-#if !LIMITED_SPACE
-    nextStart.resize(graphSize);
-    neighboursWeights.resize(graphSize);
-    nextWeights.resize(graphSize);
-#else
     results.resize(graphSize);
-#if USE_QUICK_SEM
     managerHasEmptied = new FastSemaphore (graphSize);
-#else
-    managerHasEmptied = new Semaphore (graphSize, graphSize);
-#endif
-#endif
 }
 
 void Worker::resetSemaphores() {
