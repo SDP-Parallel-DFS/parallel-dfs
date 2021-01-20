@@ -14,7 +14,7 @@
 struct intintint {
     int start;
     int child;
-    boost::multiprecision::uint1024_t prefix;
+    boost::multiprecision::cpp_int prefix;
 };
 
 class feederManager {

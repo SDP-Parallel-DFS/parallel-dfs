@@ -44,7 +44,7 @@ void emptierManager::preGraphSize() {
     while (nodeRead < graphSize) {
         workers->at(i).askManagerToEmpty->wait();
         toPush.start = static_cast<int> ( workers->at(i).results.at(positionsIntoWorkQueues[i]).father ); //node itself
-        toPush.prefix = workers->at(i).results.at(positionsIntoWorkQueues[i]).adjWeights->at(0); //weight
+        toPush.prefix = workers->at(i).results.at(positionsIntoWorkQueues[i]).adjWeights; //weight
         positionsIntoWorkQueues[i] = (positionsIntoWorkQueues[i] + 1) % workers->at(i).graphSize;
 
         commonSemQueueEmpty->wait();
@@ -64,7 +64,7 @@ void emptierManager::weightsAndPrefixes() {
     intintint toPushWeight;
     int readNodes = 0;
 
-    uint1024_t prefix = 0;
+    cpp_int prefix = 0;
     std::vector<int> *childs;
     boostIntVectBoostVect *next;
 

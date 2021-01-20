@@ -51,6 +51,17 @@ void startEndFManager(feederManager fManager) {
     fManager.startEndTimes();
 }
 
+
+void setupTime(Graph *g) {
+    boost::multiprecision::cpp_int max = 0;
+    for(int i=0; i<g->rootsSize; i++) {
+        max = max + g->nodes.at(g->roots.at(i)).nodeWeight;
+    }
+    for(int i=0; i<g->nNodes; i++) {
+        g->nodes.at(i).prefix = max;
+    }
+}
+
 template<typename T>
 vector<size_t> sort_indexes(const vector<T> &v) {
 
@@ -73,7 +84,7 @@ void start(int nWorkers, Graph *g) {
 
     vector<Worker> allWorkers(nWorkers);
     for (int i = 0; i < nWorkers; i++) {
-        allWorkers.at(i).initialize(i, g, nWorkers);
+        allWorkers.at(i).initialize(g, nWorkers);
     }
     FastSemaphore commonSemQueueFull(0);
     FastSemaphore commonSemQueueEmpty(g->nNodes);
@@ -86,7 +97,6 @@ void start(int nWorkers, Graph *g) {
 
 
     //pre phase
-
     vector<thread> tPreGraphSizeWorkers(nWorkers);
     for (int i = 0; i < nWorkers; i++) {
         tPreGraphSizeWorkers[i] = thread(preGraphSizeWorker, &allWorkers.at(i));
@@ -109,6 +119,7 @@ void start(int nWorkers, Graph *g) {
 
 
     //first phase
+    setupTime(g);
 
 
     vector<thread> tWorkers(nWorkers);
@@ -134,15 +145,12 @@ void start(int nWorkers, Graph *g) {
 
 
     //second phase
-
     vector<size_t> tmp = sort_indexes(g->nodes);
     for (int i = 0; auto x : tmp) {
         g->nodes.at(static_cast<int> (x)).end = ++i;
     }
 
-
     //third phase
-
     vector<thread> seWorkers(nWorkers);
     for (int i = 0; i < nWorkers; i++) {
         seWorkers[i] = thread(startEndWorker, &allWorkers.at(i));
@@ -179,6 +187,7 @@ int main(int argc, const char *argv[]) {
     g.sortVectors();
 
     start(2, &g);
+
 
     if ((fp = fopen(outname.c_str(), "w")) == NULL) {
         cout << "Error: File doesn't exist." << endl;

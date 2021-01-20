@@ -9,8 +9,7 @@
 using namespace boost::multiprecision;
 using namespace std;
 
-void Worker::initialize(int id, Graph *g, int nWorkers) {
-    this->id = id;
+void Worker::initialize(Graph *g, int nWorkers) {
     this->graphSize = g->nNodes / nWorkers + 1;
     results.resize(graphSize);
     managerHasEmptied = new FastSemaphore (graphSize);
@@ -32,7 +31,7 @@ void Worker::preGraphSize() {
     n = next;
     askManagerToFeed->signal();
     while (n->id != -1) {
-        toPush.adjWeights = new vector<uint1024_t>(1, n->nodeWeight);
+        toPush.adjWeights = n->nodeWeight;
         toPush.father = n->id;
         managerHasEmptied->wait();
         results.at(positionIntoGraphVector) = toPush;
@@ -60,7 +59,7 @@ void Worker::weightsAndPrefixes() {
 
         n->nodeWeight += n->prefix;
 
-        toPush.adj = n->adj;
+        toPush.adj = &n->adj;
         toPush.father = n->prefix;
 
         managerHasEmptied->wait();
@@ -87,7 +86,7 @@ void Worker::startEndTimes() {
 
     while (n->id != -1) {
 
-        toPush.adj = n->ancestors;
+        toPush.adj = &n->ancestors;
         toPush.father = n->start;
 
         managerHasEmptied->wait();

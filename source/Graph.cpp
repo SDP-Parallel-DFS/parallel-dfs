@@ -13,14 +13,13 @@ Graph::Graph(FILE *fp) {
     rootsSize = nNodes;
     for (int i = 0; i < nNodes; i++) {
         nodes[i].id = i;
-        nodes[i].adj = new vector<int>;
     }
     this->build(fp);
     preLeaves.resize(preLeavesPos);
     roots.resize(rootsSize);
 
     for (int i = 0; i < nNodes; i++) {
-        nodes[i].ancestors = new vector<int>(nodes[i].ancSize);
+        nodes[i].ancestors.resize(nodes[i].ancSize);
         if (nodes[i].root) {
             roots.at(rootsPos++) = i;
         }
@@ -30,33 +29,23 @@ Graph::Graph(FILE *fp) {
 
 void Graph::sortVectors() {
     for (int v = 0; v < nNodes; ++v) {
-        sort(nodes[v].adj->begin(), nodes[v].adj->end(), std::less<int>());
+        sort(nodes[v].adj.begin(), nodes[v].adj.end(), std::less<int>());
     }
 }
 
 void Graph::build_addEdges(unsigned u, vector<unsigned> &adj, unsigned adj_size) {
     nEdges += adj_size;
     if (adj_size > 0) {
-        if (nodes[u].adjSize == 0) {
-            nodes[u].adj->resize(adj_size);
-            for (int i = 0; i < adj_size; i++) {
-                nodes[u].adj->at(i) = adj[i];
-                if (nodes.at(adj[i]).root) {
-                    nodes.at(adj[i]).root = false;
-                    rootsSize--;
-                }
-                nodes[adj[i]].ancSize++;
+        nodes[u].adj.resize(adj_size);
+        for (int i = 0; i < adj_size; i++) {
+            nodes[u].adj.at(i) = adj[i];
+            if (nodes.at(adj[i]).root) {
+                nodes.at(adj[i]).root = false;
+                rootsSize--;
             }
-            nodes[u].adjSize = nodes[u].adj->size();
-        } else {
-            printf("REALLY??\n");
-            nodes[u].adj->insert(nodes[u].adj->end(), &adj[0], &adj[adj_size]);
-            nodes[u].adjSize += adj_size;
-            for (int i = 0; i < adj_size; i++) {
-                nodes[adj[i]].root = false;
-                nodes[adj[i]].ancSize++;
-            }
+            nodes[adj[i]].ancSize++;
         }
+        nodes[u].adjSize = nodes[u].adj.size();
     }
     else {
         preLeaves.at(preLeavesPos++) = u;
@@ -67,7 +56,7 @@ void Graph::reBuild(FILE *fp) {
 
     for (int i = 0; i < nNodes; i++) {
         for (int j = 0; j < nodes[i].adjSize; j++) {
-            nodes[nodes[i].adj->at(j)].ancestors->at(nodes[nodes[i].adj->at(j)].ancNumber++) = i;
+            nodes[nodes[i].adj.at(j)].ancestors.at(nodes[nodes[i].adj.at(j)].ancNumber++) = i;
         }
     }
 

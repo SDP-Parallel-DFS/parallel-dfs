@@ -16,13 +16,13 @@
 
 struct Node {
     int id;
-    boost::multiprecision::uint1024_t nodeWeight = 1;
-    boost::multiprecision::uint1024_t prefix = std::numeric_limits<boost::multiprecision::uint1024_t>::max();
+    boost::multiprecision::cpp_int nodeWeight = 1;
+    boost::multiprecision::cpp_int prefix;
     int start = INT32_MAX;
     int end = -1;
-    std::vector<int> *adj;
+    std::vector<int> adj;
     int adjSize = 0;
-    std::vector<int> *ancestors;
+    std::vector<int> ancestors;
     int ancSize = 0;
     int ancNumber = 0;
     bool root = true;
@@ -47,7 +47,7 @@ public:
 
     void build(FILE *fp);
 
-    boost::multiprecision::uint1024_t preorderVetSize = 0;
+    boost::multiprecision::cpp_int preorderVetSize = 0;
 
     void reBuild(FILE *fp);
 

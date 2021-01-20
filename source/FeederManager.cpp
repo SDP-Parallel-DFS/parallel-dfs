@@ -35,7 +35,7 @@ void feederManager::preGraphSize() {
 
         ancSize = g->nodes.at(next.start).ancSize;
         for (int i = 0; i < ancSize; i++) {
-            nextFather = g->nodes.at(next.start).ancestors->at(i);
+            nextFather = g->nodes.at(next.start).ancestors.at(i);
             if (nextFather >= 0) {
                 visitedChilds.at(nextFather)++;
                 g->nodes.at(nextFather).nodeWeight += (next.prefix);

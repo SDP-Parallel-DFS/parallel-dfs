@@ -13,15 +13,13 @@
 
 
 struct boostIntVectBoostVect {
-    boost::multiprecision::uint1024_t father;
+    boost::multiprecision::cpp_int father;
     std::vector<int> *adj;
-    std::vector<boost::multiprecision::uint1024_t> *adjWeights;
+    boost::multiprecision::cpp_int adjWeights;
 };
 
 
 class Worker {
-
-    int id;
 
 public:
     FastSemaphore *askManagerToEmpty = new FastSemaphore();
@@ -29,12 +27,14 @@ public:
     FastSemaphore *askManagerToFeed = new FastSemaphore(1);
     FastSemaphore *managerHasFed = new FastSemaphore();
 
+    ~Worker() { delete askManagerToEmpty; delete askManagerToFeed; delete managerHasFed; delete managerHasEmptied; };
+
     int graphSize;
     std::vector<boostIntVectBoostVect> results;
     Node *next;
 
 
-    void initialize(int id, Graph *g, int nWorkers);
+    void initialize(Graph *g, int nWorkers);
 
     void preGraphSize();
 
