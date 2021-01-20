@@ -86,7 +86,6 @@ void start(int nWorkers, Graph *g) {
 
 
     //pre phase
-    auto istart = std::chrono::steady_clock::now();
 
     vector<thread> tPreGraphSizeWorkers(nWorkers);
     for (int i = 0; i < nWorkers; i++) {
@@ -108,13 +107,8 @@ void start(int nWorkers, Graph *g) {
     commonSemQueueEmpty.reset();
     commonSemQueueFull.reset();
 
-    auto iend = std::chrono::steady_clock::now();
-    std::chrono::duration<double> ielapsed_seconds = iend - istart;
-    std::cout << "Pre-subsize elapsed time: " << ielapsed_seconds.count() << "s\n";
-
 
     //first phase
-    auto start = std::chrono::steady_clock::now();
 
 
     vector<thread> tWorkers(nWorkers);
@@ -138,27 +132,16 @@ void start(int nWorkers, Graph *g) {
     commonSemQueueFull.reset();
 
 
-    auto end = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cout << "Weights elapsed time: " << elapsed_seconds.count() << "s\n";
-
-
 
     //second phase
-    start = std::chrono::steady_clock::now();
 
     vector<size_t> tmp = sort_indexes(g->nodes);
     for (int i = 0; auto x : tmp) {
         g->nodes.at(static_cast<int> (x)).end = ++i;
     }
 
-    end = std::chrono::steady_clock::now();
-    elapsed_seconds = end - start;
-    std::cout << "End elapsed time: " << elapsed_seconds.count() << "s\n";
-
 
     //third phase
-    start = std::chrono::steady_clock::now();
 
     vector<thread> seWorkers(nWorkers);
     for (int i = 0; i < nWorkers; i++) {
@@ -172,10 +155,6 @@ void start(int nWorkers, Graph *g) {
     }
     seEManager.join();
     seFManager.join();
-
-    end = std::chrono::steady_clock::now();
-    elapsed_seconds = end - start;
-    std::cout << "Labels elapsed time: " << elapsed_seconds.count() << "s\n";
 }
 
 
@@ -193,25 +172,13 @@ int main(int argc, const char *argv[]) {
         cout << "Error: File doesn't exist." << endl;
         return -1;
     }
-    auto timeStart = std::chrono::steady_clock::now();
 
     Graph g(fp);
     fclose(fp);
 
     g.sortVectors();
 
-    auto timeEnd = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed_seconds = timeEnd - timeStart;
-    std::cout << "Graph creation elapsed time: " << elapsed_seconds.count() << "s\n";
-
-    timeStart = std::chrono::steady_clock::now();
-
     start(2, &g);
-
-    timeEnd = std::chrono::steady_clock::now();
-    elapsed_seconds = timeEnd - timeStart;
-    std::cout << "All calculations elapsed time: " << elapsed_seconds.count() << "s\n";
-
 
     if ((fp = fopen(outname.c_str(), "w")) == NULL) {
         cout << "Error: File doesn't exist." << endl;
