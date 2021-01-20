@@ -5,16 +5,9 @@
 #include "FeederManager.h"
 
 using namespace std;
-
-#if !USE_QUICK_SEM
-feederManager::feederManager(vector<Worker> *allWorkers, int nWorkers,
-                             Semaphore *commonSemQueueFull, Semaphore *commonSemQueueEmpty,
-                             std::vector<intintint> *commonQueue, Graph *g) {
-#else
 feederManager::feederManager(vector<Worker> *allWorkers, int nWorkers,
                              FastSemaphore *commonSemQueueFull, FastSemaphore *commonSemQueueEmpty,
                              std::vector<intintint> *commonQueue, Graph *g) {
-#endif
     this->workers = allWorkers;
     this->commonSemQueueFull = commonSemQueueFull;
     this->commonSemQueueEmpty = commonSemQueueEmpty;

@@ -5,22 +5,15 @@
 #include <algorithm>
 #include <numeric>
 
-#include "OPTIONS.h"
-
 #include "EmptierManager.h"
 #include "FeederManager.h"
 #include "Graph.h"
 #include "Worker.h"
-#if !USE_QUICK_SEM
-#include "Semaphore.h"
-#else
 #include "FastSemaphore.h"
-#endif
 
 using namespace std;
 
 void preGraphSizeWorker(Worker *worker) {
-    //cout << "Starting worker " << worker->getId() << "\n";
     worker->preGraphSize();
 }
 
@@ -34,7 +27,6 @@ void preGraphSizeFManager(feederManager fManager) {
 
 //weight+prefix
 void startWorker(Worker *worker) {
-    //cout << "Starting worker " << worker->getId() << "\n";
     worker->weightsAndPrefixes();
 }
 
@@ -48,7 +40,6 @@ void startFManager(feederManager fManager) {
 
 //father end
 void startEndWorker(Worker *worker) {
-    //cout << "Starting worker " << worker->getId() << "\n";
     worker->startEndTimes();
 }
 
@@ -84,13 +75,8 @@ void start(int nWorkers, Graph *g) {
     for (int i = 0; i < nWorkers; i++) {
         allWorkers.at(i).initialize(i, g, nWorkers);
     }
-#if !USE_QUICK_SEM
-    Semaphore commonSemQueueFull(0, g->nNodes);
-    Semaphore commonSemQueueEmpty(g->nNodes, g->nNodes);
-#else
     FastSemaphore commonSemQueueFull(0);
     FastSemaphore commonSemQueueEmpty(g->nNodes);
-#endif
 
     std::vector<intintint> commonQueue(g->nNodes);
     emptierManager eManager(&allWorkers, nWorkers, &commonSemQueueFull,
@@ -127,8 +113,6 @@ void start(int nWorkers, Graph *g) {
     std::cout << "Pre-subsize elapsed time: " << ielapsed_seconds.count() << "s\n";
 
 
-
-
     //first phase
     auto start = std::chrono::steady_clock::now();
 
@@ -139,7 +123,6 @@ void start(int nWorkers, Graph *g) {
     }
     thread tEManager(startEManager, eManager);
     thread tFManager(startFManager, fManager);
-    //std::thread first (foo);
 
     for (int i = 0; i < nWorkers; i++) {
         tWorkers[i].join();
@@ -174,8 +157,6 @@ void start(int nWorkers, Graph *g) {
     std::cout << "End elapsed time: " << elapsed_seconds.count() << "s\n";
 
 
-
-
     //third phase
     start = std::chrono::steady_clock::now();
 
@@ -185,7 +166,6 @@ void start(int nWorkers, Graph *g) {
     }
     thread seEManager(startEndEManager, eManager);
     thread seFManager(startEndFManager, fManager);
-    //std::thread first (foo);
 
     for (int i = 0; i < nWorkers; i++) {
         seWorkers[i].join();
@@ -196,60 +176,18 @@ void start(int nWorkers, Graph *g) {
     end = std::chrono::steady_clock::now();
     elapsed_seconds = end - start;
     std::cout << "Labels elapsed time: " << elapsed_seconds.count() << "s\n";
-/*
-*/
-
-
 }
 
 
 int main(int argc, const char *argv[]) {
     FILE *fp;
 
-#if QUICK_RUN
-    string graname;
-    switch (FILE_N) {
-        case 0:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v4e2.gra");
-            break;
-        case 1:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v10e3.gra");
-            break;
-        case 2:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v10e3v2.gra");
-            break;
-        case 3:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v10e3v3.gra");
-            break;
-        case 4:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v5000e50.gra");
-            break;
-        case 5:
-            graname = string("/home/lire/CLionProjects/sdp_pipelineReSolution/v100000e100.gra");
-            break;
-    }
-#if PRINT_RESULT
-    string outname;
-    outname = string("/home/lire/CLionProjects/Results/out.txt");
-#endif
-#else
-#if !PRINT_RESULT
-    // 1 parameter of format .gra is required.
-    if (argc != 2) {
-        cout << "Error: Missing parameter" << endl;
-        return -1;
-    }
-    string graname(argv[1]);
-#else
-    // 1 parameter of format .gra is required.
     if (argc != 3) {
         cout << "Usage: " << argv[0] << " input_file output_file" << endl;
         return -1;
     }
     string graname(argv[1]);
     string outname(argv[2]);
-#endif
-#endif
 
     if ((fp = fopen(graname.c_str(), "r")) == NULL) {
         cout << "Error: File doesn't exist." << endl;
@@ -274,11 +212,6 @@ int main(int argc, const char *argv[]) {
     elapsed_seconds = timeEnd - timeStart;
     std::cout << "All calculations elapsed time: " << elapsed_seconds.count() << "s\n";
 
-#if FILE_N <= 3
-    g.printTrueLabelsPreWeights();      //prints everything
-#endif
-
-#if PRINT_RESULT
 
     if ((fp = fopen(outname.c_str(), "w")) == NULL) {
         cout << "Error: File doesn't exist." << endl;
@@ -291,9 +224,6 @@ int main(int argc, const char *argv[]) {
 
     fclose(fp);
 
-#endif
-
-    //std::cout << g.var << std::endl;
 
     return 0;
 
