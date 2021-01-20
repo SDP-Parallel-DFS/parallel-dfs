@@ -30,7 +30,7 @@ struct Node {
 
     BusySemaphore *bSem = new BusySemaphore;
 
-    ~Node() { delete bSem; /*delete adj; delete ancestors;*/ };
+    ~Node() { delete bSem; };
 };
 
 #endif //SDP_PARALLELSOLUTION_NODE_H
