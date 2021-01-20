@@ -5,8 +5,6 @@
 #ifndef SDP_PARALLELSOLUTION_NODE_H
 #define SDP_PARALLELSOLUTION_NODE_H
 
-//#include <boost/multiprecision/cpp_int.hpp>
-//#include "BusySemaphore.h"
 #include <vector>
 
 struct Node {
@@ -18,13 +16,7 @@ struct Node {
     std::vector<int> adj;
     int adjSize = 0;
 
-#if GRAPH_DOUBLE_READ | GRAPH_REREAD_GRAPH
-    int ancNumber = 0;
-#endif
-#if !USE_BOOL
     bool root = true;
-#endif
-    //BusySemaphore *bSem = new BusySemaphore;
 
     Node() {
         nextNode.resize(N_THREADS+1, -1);
@@ -32,7 +24,6 @@ struct Node {
         visitatoInQuestoLivello.resize(N_THREADS+1, -1);
         pronto.resize(N_THREADS+1, false);
     }
-    //~Node() { delete bSem;};
 
     std::vector<int> nextNode;
     std::vector<char> pronto;
