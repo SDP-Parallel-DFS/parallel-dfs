@@ -1,6 +1,6 @@
 PROG = ../dfs
 CC = g++
-CPPFLAGS = -g -Wall -I./source 
+CPPFLAGS = -g -Wall -std=c++17 -I./source 
 OBJS = main.o Graph.o
 
 $(PROG) : $(OBJS)

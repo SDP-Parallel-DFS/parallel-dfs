@@ -17,38 +17,44 @@
 #include <fstream>
 #include <cmath>
 #include <unordered_set>
+#include <sstream>
 
 #define GRAPH_DEBUG 0
 
 using namespace std;
 
-
 struct Node
 {
-    int id;
-    int father = -1;
-    int start = -1;
-    int end = -1;
-    int subTreeSize = -1;
-    vector<int> adj;
+    unsigned int id;
+    unsigned int pre = 0,
+                 post = 0,
+                 s = numeric_limits<unsigned int>::max(),
+                 e = 0;
+    int parent = -1;
+    vector<unsigned int> adj;
+    bool visited;
 };
 
 class Graph
 {
-    unsigned nNodes;
+    unsigned int pre, post, nNodes;
     vector<Node> nodes;
-    unordered_set<unsigned> roots;
+    unordered_set<unsigned int> roots;
     void init();
-    void build(FILE * fp);
-    void addEdges_build(unsigned u, const unsigned adj[], unsigned adj_size);
+    void build(FILE *fp);
+    void build_addEdges(unsigned int u, vector<unsigned int> &adj, unsigned int adj_size);
+
+    void sequentialDFS_r(unsigned int p);
+
 public:
-    Graph(FILE * fp);
-    Graph(unsigned nodes);
-    void addEdge(unsigned u, unsigned v);
+    Graph(FILE *fp);
+    Graph(ifstream &input_stream);
+    Graph(unsigned int nodes);
+    void addEdge(unsigned int u, unsigned int v);
     void printGraph();
     void sortVectors();
+    void printNodesStatus();
+    void sequentialDFS();
 };
 
-
 #endif /* Graph_hpp */
-

@@ -32,17 +32,13 @@ int main(int argc, const char * argv[]) {
     
     Timer t;
     t.start();
-    
-    
-    
     Graph g(fp);
     fclose(fp);
-    
     g.sortVectors();
+    g.sequentialDFS();
     t.stop();
     t.printElapsed();
-
-    g.printGraph();
+    g.printNodesStatus();
     return 0;
 
 
