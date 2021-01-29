@@ -25,6 +25,5 @@ This branch contains code to perform a parallel DFS using the Path-based approac
 cd source
 cmake .
 make
-./PathBasedThreadWorkers ../graph_examples/test.gra sequential
-./PathBasedThreadWorkers ../graph_examples/test.gra parallel
+./PathBasedThreadWorkers ../graph_examples/test.gra result.txt
 ```

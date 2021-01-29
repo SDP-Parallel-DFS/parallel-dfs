@@ -51,7 +51,8 @@ Graph::Graph(FILE *fp) : nodes(), roots(), P() {
     
     fscanf(fp, "%d\n", &nNodes);
     init();
-	buf = vector<unsigned int>(nNodes + 1);
+	buf = vector<unsigned int>();
+	buf.reserve(nNodes + 1);
     while (fscanf(fp, "%d: ", &u) != EOF) {
         while(fscanf(fp, "%d ", &val)) {
             buf.push_back(val);
@@ -138,11 +139,20 @@ void Graph::printGraph()
 	cout << endl;
 }
 
-void Graph::printNodesStatus()
+
+void Graph::printNodesStatus(ofstream& output_stream)
 {
 	for (int v = 0; v < nNodes; ++v)
-		cout << v << " " << nodes[v].s << " " << nodes[v].e << endl;
+		output_stream << v << " " << nodes[v].s << " " << nodes[v].e << endl;
 }
+
+void Graph::printNodesStatus(FILE* out)
+{
+	for (int v = 0; v < nNodes; ++v)
+		fprintf(out, "%d %d %d\n", v, nodes[v].s, nodes[v].e);
+}
+
+
 
 // meant to be used after building the graph.
 void Graph::sortVectors()

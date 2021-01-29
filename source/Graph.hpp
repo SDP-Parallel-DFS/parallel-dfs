@@ -88,7 +88,8 @@ public:
 	~Graph();
 	void addEdge(unsigned int u, unsigned int v);
 	void printGraph();
-	void printNodesStatus();
+	void printNodesStatus(ofstream& output_stream);
+	void printNodesStatus(FILE* out);
 	void sortVectors();
 	void sequentialDFS();
 	void buildDT();
